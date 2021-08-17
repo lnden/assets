@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>返回顶部</title>
+  <style>
+    ul {
+      counter-reset: items;
+    }
+    li:before {
+      counter-increment: items;
+      content: counter(items);
+    }
+  </style>
+  <script>
+		window.addEventListener('load', () => {
+			const btnBottom = document.getElementById('btn-bottom');
+			const container = document.getElementById('container');
+			btnBottom.addEventListener('click', () => {
+				window.scrollTo(0, container.offsetHeight);
+      });
+
+
+			const btnTop = document.getElementById('btn-top');
+			const scrollToTop = () => {
+				const c = document.documentElement.scrollTop || document.body.scrollTop;
+				if (c > 0) {
+					window.requestAnimationFrame(scrollToTop);
+					window.scrollTo(0, c - c / 8);
+				}
+			};
+			btnTop.addEventListener('click', () => {
+				scrollToTop()
+			});
+		})
+  </script>
+</head>
+<body>
+  <button id="btn-bottom">瞬移底部</button>
+  <ul id="container">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ul>
+  <button id="btn-top">返回顶部</button>
+</body>
+</html>
