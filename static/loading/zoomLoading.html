@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>放大/缩小loading</title>
+    <style>
+        .loading-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 8;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, .9);
+        }
+
+        .loading-wrap {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .loading {
+            display: inline-block;
+            border-radius: 50%;
+            background-color: #2d8cf0;
+            width: 120px;
+            height: 120px;
+            animation: spin-bounce 1s 0s ease-in-out infinite;
+        }
+
+        @keyframes spin-bounce {
+            0% {
+                transform: scale(0)
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="loading-layer">
+        <div class="loading-wrap">
+            <span class="loading"></span>
+        </div>
+    </div>
+    正文数据
+</body>
+
+</html>
