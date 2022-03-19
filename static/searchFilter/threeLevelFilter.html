@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+	<script src="./threeLevelData.js"></script>
+
+</head>
+
+<body>
+	<div id="app"></div>
+
+	<script>
+		const app = new Vue({
+			el: '#app',
+			data: {
+				value: '',
+				dataList: response.data,
+				originData: response.data,
+			},
+			template: `
+			<div>
+				<input placeholder="一级/二级/三级回车查询" @keyup.enter="handleChange" v-model="value"/>
+				<ul>
+					<li v-for="item in dataList" :key="item.id">
+						<h3>{{item.name}}</h3>
+						<ul>
+							<li v-for="value in item && item.children" :key="value.id">
+								<h4>{{value.name}}</h4>
+								<ul>
+									<li v-for="v in value && value.children" :key="v.id">{{v.field_name}}</li>
+								</ul>	
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			`,
+			methods: {
+				handleChange() {
+					if (this.value.trim() === "") {
+						this.dataList = this.originData;
+						return;
+					}
+					if (this.originData && this.originData.length) {
+						const result = this.deal(this.originData, node => (node.name || node.field_name).includes(this.value));
+						this.dataList = result
+					}
+				},
+				deal(nodes, predicate) {
+					// 如果已经没有节点了，结束递归
+					if (!(nodes && nodes.length)) {
+						return;
+					}
+
+					const newChildren = [];
+					for (const node of nodes) {
+						if (predicate(node)) {
+							// 如果自己（节点）符合条件，直接加入到新的节点集
+							newChildren.push(node);
+							// 并接着处理其 children
+							// node.children = deal(node.children, predicate);
+						} else {
+							// 如果自己不符合条件，需要根据子集来判断它是否将其加入新节点集
+							// 根据递归调用 deal() 的返回值来判断
+							const subs = this.deal(node.children, predicate);
+
+							// 以下两个条件任何一个成立，当前节点都应该加入到新子节点集中
+							// 1. 子孙节点中存在符合条件的，即 subs 数组中有值
+							// 2. 自己本身符合条件
+							if ((subs && subs.length) || predicate(node)) {
+								node.children = subs;
+								newChildren.push(node);
+							}
+							/* if (subs && subs.length) {
+									// 1. 如果子孙集中有符合要求的节点（返回 [...])，加入
+									node.children = subs;
+									newChildren.push(node);
+							} */
+							// 2. 否则，不加入（因为整个子集都没有符合条件的）
+						}
+					}
+					return newChildren.length ? newChildren : [];
+				}
+			},
+		})
+	</script>
+</body>
+
+</html>

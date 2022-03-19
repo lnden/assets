@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+	<script src="./twoLevelData.js"></script>
+
+</head>
+
+<body>
+	<div id="app"></div>
+
+	<script>
+		const app = new Vue({
+			el: '#app',
+			data: {
+				value: '',
+				dataList: response.data,
+				originData: response.data,
+			},
+			template: `
+			<div>
+				<input placeholder="一级/二级回车查询" @keyup.enter="handleChange" v-model="value"/>
+				<ul>
+					<li v-for="item in dataList" :key="item.id">
+						<h3>{{item.name}}</h3>
+						<ul>
+							<li v-for="value in item && item.children" :key="value.id">{{value.field_name}}</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			`,
+			methods: {
+				handleChange() {
+					if (this.value.trim() === "") {
+						this.dataList = this.originData;
+						return;
+					}
+					if (this.originData && this.originData.length) {
+						let list = [];
+						this.originData.forEach(item => {
+							let visible = item.name.includes(this.value);
+							let arr = item.children;
+							if (!visible) {
+								arr = arr.filter(value => {
+									let isVisible = value.field_name.includes(this.value);
+									if (isVisible) {
+										return value;
+									}
+								});
+							}
+							if (arr.length || visible) {
+								list.push({
+									...item,
+									children: arr
+								});
+							}
+						});
+						this.dataList = list
+						console.log(JSON.stringify(list, null, 2));
+					}
+				}
+			},
+		})
+	</script>
+</body>
+
+</html>

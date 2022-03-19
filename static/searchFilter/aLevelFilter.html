@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+	<script src="./aLevelData.js"></script>
+
+</head>
+
+<body>
+	<div id="app"></div>
+
+	<script>
+		const app = new Vue({
+			el: '#app',
+			data: {
+				value: '',
+				dataList: response.data,
+				originData: response.data,
+			},
+			template: `
+			<div>
+				<input placeholder="一级回车查询" @keyup.enter="handleChange" v-model="value"/>
+				<ul>
+					<li v-for="item in dataList" :key="item.id">{{item.field}} - <span style="color: red"> {{item.field_name}}</span></li>
+				</ul>
+			</div>
+			`,
+			methods: {
+				handleChange() {
+					const value = this.value;
+					this.dataList = this.originData.filter(item => (item.field_name.includes(value) || item.field.includes(value)))
+				}
+			},
+		})
+	</script>
+</body>
+
+</html>
