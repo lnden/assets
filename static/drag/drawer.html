@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>drag原生js拖拽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        body {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+
+        #setting {
+            width: 38px;
+            height: 38px;
+            margin: 0 auto;
+            background-color: #1890ff;
+            position: fixed;
+            top: 200px;
+            left: calc(100% - 38px);
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 9999;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        img {
+            width: 26px;
+            height: 26px;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            user-select: none;
+        }
+
+        .drawer-content {
+            width: 100%;
+            height: 200px;
+            position: fixed;
+            bottom: 0;
+            box-shadow: -6px 0 16px -8px rgba(0, 0, 0, 0.08),
+                -9px 0 28px 0 rgba(0, 0, 0, 0.05),
+                -12px 0 48px 16px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+                box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            background: white;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -38px;
+            right: 100px;
+            width: 38px;
+            height: 38px;
+            border-radius: 3px 3px 0 0;
+            background-color: #1890ff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="setting">
+        <img src="./img/setting.svg" draggable="false" oncontextmenu="return false;" alt="setting" />
+    </div>
+    <div class="drawer-content" style="transform: translateY(120%)">
+        <div class="close-btn">
+            <img src="./img/close.svg" draggable="false" oncontextmenu="return false;" alt="close" />
+        </div>
+        <p>容器</p>
+    </div>
+
+    <script>
+        function $ (element) {
+            if (!element) return null;
+            if (element.startsWith("#")) {
+                const id = element.slice(1);
+                return document.getElementById(id);
+            } else {
+                return document.querySelector(element);
+            }
+        }
+
+        const settingBtn = $("#setting");
+        const drawerWrap = $(".drawer-content");
+        const closeBtn = $(".close-btn");
+        //判断边界问题
+        function range (loc, min, max) {
+            if (loc > max) {
+                return max;
+            } else if (loc < min) {
+                return min;
+            } else {
+                return loc;
+            }
+        }
+        //拖拽功能
+        var key = false
+        var firstTime = 0;
+        var lastTime = 0;
+        function drag (eg) {
+            eg.addEventListener("mousedown", (ev) => {
+                let e = ev || window.event;
+                let eX = e.clientX;
+                let eY = e.clientY;
+                currentValue = eX + eY
+                let disX = eX - eg.offsetLeft;
+                let disY = eY - eg.offsetTop;
+                document.onmousemove = function (ev) {
+                    firstTime = new Date().getTime();
+                    let e = ev || window.event;
+                    let l = e.clientX - disX;
+                    let h = e.clientY - disY;
+                    moveValue = e.clientX + e.clientY
+                    let windowWidth = document.documentElement.clientWidth;
+                    let windowHeight = document.documentElement.clientHeight;
+                    l = range(l, 0, windowWidth - eg.offsetWidth);
+                    h = range(h, 0, windowHeight - eg.offsetHeight);
+                    eg.style.left = `${l}px`;
+                    eg.style.top = `${h}px`;
+                    eg.style.cursor = "move";
+                };
+            });
+            document.onmouseup = function () {
+                document.onmousemove = null;
+                eg.style.cursor = "pointer";
+                lastTime = new Date().getTime();
+                if ((lastTime - firstTime) > 300) {
+                    key = true;
+                } else {
+                    key = false
+                }
+            };
+        }
+        drag(settingBtn);
+
+        settingBtn.addEventListener("click", () => {
+            if (!key) return
+            if (!drawerWrap.hasAttribute("style")) {
+                drawerWrap.setAttribute("style", "transform: translateY(120%);");
+            } else {
+                drawerWrap.removeAttribute("style");
+                settingBtn.setAttribute("class", "hidden");
+            }
+        });
+
+        closeBtn.addEventListener("click", () => {
+            settingBtn.removeAttribute("class");
+            drawerWrap.setAttribute("style", "transform: translateY(120%);");
+        });
+    </script>
+</body>
+
+</html>

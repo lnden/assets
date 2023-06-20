@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>线性选项卡切换</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+        }
+
+        #main {
+            width: 440px;
+            margin: 30px auto;
+            position: relative;
+            height: 450px;
+        }
+
+        .tabs {
+            width: 440px;
+            height: 40px;
+            line-height: 40px;
+            display: flex;
+            margin-bottom: -1px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+
+        .tabs div {
+            text-align: center;
+            cursor: pointer;
+            width: 110px;
+            border: 1px solid #dddddd;
+            margin-right: 2px;
+            border-radius: 2px 2px 0 0;
+        }
+
+        #content {
+            position: absolute;
+            width: 600px;
+            height: 400px;
+            overflow: hidden;
+            margin: 39px auto;
+        }
+
+        #content div {
+            position: absolute;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            background-color: white;
+            border: 1px solid #dddddd;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .active {
+            z-index: 99;
+            background: white;
+            border: 1px solid #dddddd;
+            border-bottom: none !important;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="main">
+        <div class="tabs">
+            <div class="red active">选项一</div>
+            <div class="green">选项二</div>
+            <div class="blue">选项三</div>
+            <div class="yellow">选项四</div>
+        </div>
+        <div id="content">
+            <div id="one" class="active">
+                <p>爱情要完结的时候自会完结，到时候，你不想画上句号也不行。爱情，原来是含笑饮毒酒。</p>
+            </div>
+            <div id="two">
+                <p>在这个光怪陆离的人间，没有谁可以将日子过的行云流水。但我始终相信，走过平湖山雨，岁月山河，那些历尽劫数，尝遍百味的人，会更加生动而干净。</p>
+            </div>
+            <div id="three">
+                <p>对于三十岁以后的人来说，十年八年不过是指缝间的事，而对于年轻人而言，三年五年就可以是一生一世。</p>
+            </div>
+            <div id="four">
+                <p>我要你知道，在这个世界上总有一个人是等着你的，不管在什么时候，不管在什么地方，反正你知道，总有这么个人。</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 实现选项卡功能
+        function init () {
+            var tabs = document.querySelectorAll('.tabs > div');
+            var contents = document.querySelectorAll('#content > div');
+
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].index = i;
+                tabs[i].onclick = function () {
+                    for (let j = 0; j < tabs.length; j++) {
+                        tabs[j].classList.remove("active");
+                        contents[j].classList.remove("active");
+                    }
+                    tabs[i].classList.add("active");
+                    contents[i].classList.add("active");
+                }
+            }
+        }
+        init();
+    </script>
+</body>
+
+</html>
