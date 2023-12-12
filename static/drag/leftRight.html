@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>分隔条左右拖动 splitter</title>
+  <style>
+    #root {
+      position: relative;
+      height: 300px;
+      margin: 20px auto;
+      /* border: 1px solid #f00; */
+    }
+
+    #left {
+      width: 200px;
+      background: #ffdd40;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      /* border: 1px solid #009; */
+    }
+
+    #right {
+      margin-left: 220px;
+      background: pink;
+      height: 100%;
+      /* border: 1px solid #090; */
+    }
+
+    #line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 209px;
+      width: 4px;
+      background: #e7e7e7;
+      box-shadow: 0px 0px 8px #ccc;
+      cursor: ew-resize;
+    }
+
+    .octotree-toggle {
+      --toggler-color-bg: #fff;
+      --toggler-color-text: #6a6a6a;
+      color: var(--color-fg-default, #24292f);
+      background-color: var(--toggler-color-bg);
+      box-shadow: 0 2px 8px var(--color-border-default, var(--color-border-primary));
+      opacity: 1;
+      line-height: 1;
+      position: absolute;
+      right: -30px;
+      top: var(--octotree-toggler-y, 33%);
+      text-align: center;
+      width: 30px;
+      z-index: 998;
+      cursor: pointer;
+      border-radius: 0px 6px 6px 0px;
+      border-width: 1.5px 1.5px 1.5px;
+      border-style: solid solid solid none;
+      border-color: rgb(207, 215, 223) rgb(207, 215, 223) rgb(207, 215, 223);
+      border-image: initial;
+      border-left: none;
+      padding: 2px 0px 32px;
+      transition: right 0.25s ease-in 0.2s, opacity 0.35s ease-in 0.2s;
+    }
+
+    .octotree-toggle>.octotree-toggle-icon {
+      position: relative;
+      opacity: 0.65;
+      /* pointer-events: none; */
+      top: 5px;
+    }
+
+    .octotree-toggle>.octotree-toggle-icon::before {
+      color: var(--toggler-color-text);
+      content: ">";
+      font-family: octotree;
+      font-size: 15px;
+      top: 0px;
+      width: 16px;
+      display: inline-block;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1;
+      position: relative;
+      text-align: center;
+      text-transform: none;
+      -webkit-font-smoothing: antialiased;
+      font-variant: normal;
+    }
+
+    .octotree-toggle>.octotree-toggle__brand {
+      color: var(--toggler-color-text);
+      display: inline-block;
+      pointer-events: none;
+      font-size: 14px;
+      position: relative;
+      top: 10px;
+      transform: rotate(-180deg);
+      writing-mode: tb-rl;
+    }
+
+    .octotree-toggle__mover {
+      position: absolute;
+      margin-left: 1px;
+      bottom: -2px;
+      left: -2px;
+      right: -2px;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 24px;
+      vertical-align: middle;
+      user-select: none;
+      cursor: move;
+      opacity: 0.4;
+      transition: opacity 0.1s ease 0s;
+    }
+
+    .octotree-toggle__mover::after,
+    .octotree-toggle__mover::before {
+      content: "";
+      height: 2px;
+      min-height: 2px;
+      width: 12px;
+      display: block;
+      background-color: var(--toggler-color-text);
+      border-radius: 1px;
+    }
+
+    .octotree-toggle__mover::after {
+      margin-top: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <div id="left">左边部分</div>
+    <div id="right">右边部分</div>
+    <div id="line" >
+      <div class="octotree-toggle" id="icon">
+        <i class="octotree-toggle-icon" onclick="toggleLeftRight()"></i>
+        <div class="octotree-toggle__brand"><span>Octotree</span></div>
+        <div class="octotree-toggle__mover"></div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  // 改变分隔条左右宽度所需常量
+  const leftWidth = 200;  // 左边部分宽度
+  const rightToLeftGap = 20;  // 右边部分与左边部分的距离
+  const lineWidth = 4; // 分隔条宽度
+  const splitMinLeft = 209; // 分隔条左边部分最小宽度
+  const splitMaxLeft = 800; // 分隔条左边部分最大宽度
+
+  var oRoot = document.getElementById('root'),
+    oLeft = document.getElementById('left'),
+    oRight = document.getElementById('right'),
+    oLine = document.getElementById('line'),
+    oIcon = document.getElementById('icon'),
+    moveIconEle = document.querySelector('.octotree-toggle__mover');
+
+
+  window.onload = function () {
+    oLine.onmousedown = handleLineMouseDown;
+    moveIconEle.onmousedown = handleIconMouseDown;
+    oIcon.onmousedown = function(e) {
+      e.stopPropagation()
+    }
+  };
+
+  // 分隔条操作
+  function handleLineMouseDown (e) {
+    // 记录下初始位置的值
+    let disX = e.clientX;
+    oLine.left = oLine.offsetLeft;
+
+    document.onmousemove = function (e) {
+      let moveX = e.clientX - disX;   // 鼠标拖动的偏移距离
+      let iT = oLine.left + moveX,    // 分隔条相对父级定位的 left 值
+        maxT = oRoot.clientWidth - oLine.offsetWidth;
+
+      iT < 0 && (iT = 0);
+      iT > maxT && (iT = maxT);
+
+      if (iT <= splitMinLeft || iT >= splitMaxLeft) return false;
+
+      let leftLineGap = splitMinLeft - leftWidth; // 分隔条距左边部分的距离
+      let oLeftWidth = iT - leftLineGap;
+      let oRightMarginLeft = oLeftWidth + lineWidth + rightToLeftGap;
+
+      oLine.style.left = `${iT}px`;
+      oLeft.style.width = `${oLeftWidth}px`;
+      oRight.style.marginLeft = `${oRightMarginLeft}px`;
+      return false;
+    };
+
+    // 鼠标放开的时候取消操作
+    document.onmouseup = function () {
+      document.onmousemove = null;
+      document.onmouseup = null;
+    };
+  }
+
+
+  // 图标操作，允许上下拖动
+  function handleIconMouseDown (e) {
+    // 记录下初始位置的值
+    let disY = e.clientY;
+    oIcon.top = oIcon.offsetTop;
+
+    document.onmousemove = function (e) {
+      let moveY = e.clientY - disY;   // 鼠标拖动的偏移距离
+      let iT = oIcon.top + moveY,    // 图标相对父级定位的 top 值
+        maxT = oRoot.clientHeight - oIcon.offsetHeight;
+
+      iT < 0 && (iT = 0);
+      iT > maxT && (iT = maxT);
+
+      oIcon.style.top = `${iT}px`;
+      return false;
+    };
+
+    // 鼠标放开的时候取消操作
+    document.onmouseup = function () {
+      document.onmousemove = null;
+      document.onmouseup = null;
+    };
+  }
+
+  function toggleLeftRight () {
+    if (oLeft.offsetWidth > 0) {
+      oLeft.style.width = '0px'; // 收起左侧部分
+      oRight.style.marginLeft = '20px'; // 收起左侧部分后，右侧部分左外边距设置为20px
+      oLine.style.left = '0px'; // 移动分隔线到最左侧
+    } else {
+      oLeft.style.width = '200px'; // 展开左侧部分
+      oRight.style.marginLeft = '220px'; // 展开左侧部分后，右侧部分左外边距设置为220px
+      oLine.style.left = '209px'; // 移动分隔线到原来的位置
+    }
+  }
+</script>
+
+</html>
